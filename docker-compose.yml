@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  data_generator:
+    build: .
+    environment:
+    - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
+    command: python random_number_generator.py
+  
+  model_trainer:
+    build: .
+    environment:
+    - PYTHONUNBUFFERED=1
+    volumes:
+      - .:/app
+    command: python train_random_forest_model.py
+
+  mlflow_server:
+    build:
+      context: .
+      dockerfile: mlflow.Dockerfile
+    ports:
+      - "8889:8889"
+    volumes:
+      - mlflow-data:/mlflow
+    environment:
+      - MLFLOW_TRACKING_URI=sqlite:///mlflow/mlflow.db
+
+volumes:
+  mlflow-data:
